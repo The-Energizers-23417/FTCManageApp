@@ -9,6 +9,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogout;
   final bool showBackButton;
   final List<Widget>? actions;
+  final PreferredSizeWidget? bottom;
 
   const TopAppBar({
     super.key,
@@ -17,10 +18,11 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showLogout = true,
     this.showBackButton = true,
     this.actions,
+    this.bottom,
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 
   /// Toggles between light and dark theme modes via ThemeService.
   void _toggleTheme(BuildContext context) {
@@ -76,6 +78,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       title: Text(title),
       centerTitle: true,
+      bottom: bottom,
 
       actions: [
         if (actions != null) ...actions!,

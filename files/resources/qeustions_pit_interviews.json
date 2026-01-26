@@ -1,0 +1,601 @@
+{
+  "source": {
+    "title": "Judging Question Bank",
+    "season": "2025-26",
+    "revision": "25-26.1",
+    "type": "pdf",
+    "url": "https://ftc-resources.firstinspires.org/ftc/archive/2026/event/question-bank"
+  },
+  "awards": [
+    {
+      "award": "Think Award",
+      "questions": [
+        {
+          "text": "Can you describe your team’s brainstorming process?",
+          "required": null,
+          "follow_ups": [
+            "As ideas came in, did your team use any trade-off or cost/benefit analysis?",
+            "In the end, did your team settle on one design, or were different parts of multiple ideas used?",
+            "What methods were used to prove a design would work?"
+          ]
+        },
+        {
+          "text": "How did your team improve your robot throughout the season?",
+          "required": null,
+          "follow_ups": [
+            "Did your team iterate on a single design?",
+            "Did your team ever start over with a new design?",
+            "If yes, how did your team determine that a new design was needed?"
+          ]
+        },
+        {
+          "text": "Can you tell us an example of a lesson your team learned while working on your robot this season?",
+          "required": null,
+          "follow_ups": [
+            "What did your team do differently based on this?"
+          ]
+        },
+        {
+          "text": "How did your team track accomplishments or challenges throughout the season?",
+          "required": null,
+          "follow_ups": [
+            "What was your team’s biggest accomplishment?",
+            "What was your team’s biggest challenge?"
+          ]
+        },
+        {
+          "text": "Did your team use a method to measure progress to their goals throughout the season?",
+          "required": null,
+          "notes": "(for example, “score x number of points by this time in a season”)",
+          "follow_ups": [
+            "What method(s) did your team use to track?",
+            "How did your team determine if they were going to meet their goals?"
+          ]
+        },
+        {
+          "text": "Did your team employ any analysis in making their design decisions?",
+          "required": null,
+          "follow_ups": [
+            "How did you approach this?"
+          ]
+        },
+        {
+          "text": "How does your team define their Engineering process?",
+          "required": null,
+          "follow_ups": [
+            "Did the team find that it worked well for your team?"
+          ]
+        },
+        {
+          "text": "What did your team learn this season?",
+          "required": null,
+          "follow_ups": [
+            "How did your mentors contribute to your learning?"
+          ]
+        },
+        {
+          "text": "How did your team decide what aspects of their robot needed to be improved?",
+          "required": null,
+          "follow_ups": [
+            "What types of data did the team use to determine this?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Connect Award",
+      "questions": [
+        {
+          "text": "How did your team set your goals and strategies for this season?",
+          "required": null,
+          "follow_ups": [
+            "Does your team have a learning plan for the team?",
+            "Is your team meeting your goals?"
+          ]
+        },
+        {
+          "text": "Does your team reach out to new STEM professionals?",
+          "required": null,
+          "follow_ups": [
+            "In what way(s)? Can you give us some examples?"
+          ]
+        },
+        {
+          "text": "Have any STEM professionals become a Mentor for your team?",
+          "required": null,
+          "follow_ups": [
+            "Can you give us some examples of the skills your team has learned from these professionals?"
+          ]
+        },
+        {
+          "text": "Did your team create a learning plan this season?",
+          "required": null,
+          "follow_ups": [
+            "If so, how did your team decide what should be on the plan for each team member?",
+            "If not, how did your team determine what skills or training was needed to meet your goals?"
+          ]
+        },
+        {
+          "text": "What skills have your team learned by being a part of the team?",
+          "required": null,
+          "follow_ups": [
+            "What impact has learning this new skill meant to your team?"
+          ]
+        },
+        {
+          "text": "How does your team work with other FIRST teams in your area?",
+          "required": null,
+          "follow_ups": [
+            "How did your team choose what activities to collaborate on?"
+          ]
+        },
+        {
+          "text": "Has your team collaborated with FIRST teams outside of your area online or virtually?",
+          "required": null,
+          "follow_ups": [
+            "What has your team learned from this collaboration?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Reach Award",
+      "questions": [
+        {
+          "text": "Does your team perform any type of community service or outreach?",
+          "required": null,
+          "follow_ups": [
+            "What activities has your team participated in to introduce people to FIRST?",
+            "What are your objectives when you participate in these activities?"
+          ]
+        },
+        {
+          "text": "Who organizes your team or organization’s outreach or community service activities?",
+          "required": null,
+          "follow_ups": [
+            "What planning tools did your team use to organize these events?"
+          ]
+        },
+        {
+          "text": "What has resulted from your team’s FIRST outreach activities?",
+          "required": null,
+          "follow_ups": [
+            "How did your team’s outreach approach support the FIRST community?"
+          ]
+        },
+        {
+          "text": "Has your team been able to successfully recruit anyone to participate in FIRST?",
+          "required": null,
+          "follow_ups": [
+            "Can you give examples of individuals who are now involved in FIRST?",
+            "What are their contributions to the FIRST program?"
+          ]
+        },
+        {
+          "text": "Do you consider your team to be an ambassador for FIRST?",
+          "required": null,
+          "follow_ups": [
+            "If so, what does your team do to be an ambassador?",
+            "What impact is your team having on the FIRST community?"
+          ]
+        },
+        {
+          "text": "How do you market your team?",
+          "required": null,
+          "follow_ups": [
+            "How does your team help to increase awareness of FIRST?",
+            "How does your team add creativity to your marketing efforts?"
+          ]
+        },
+        {
+          "text": "Has your team received any feedback on your marketing efforts?",
+          "required": null,
+          "follow_ups": [
+            "What has your team changed or edited based on this feedback?"
+          ]
+        },
+        {
+          "text": "How has your team raised the profile of FIRST with your efforts?",
+          "required": null,
+          "follow_ups": [
+            "Does your team have any specific examples where your efforts had an impact?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Sustain Award",
+      "questions": [
+        {
+          "text": "Does your team have a sustainability plan?",
+          "required": null,
+          "follow_ups": [
+            "What does that look like?"
+          ]
+        },
+        {
+          "text": "How does your team fundraise or raise funds for your activities?",
+          "required": null,
+          "follow_ups": [
+            "Does your team have a budget?",
+            "How is your team’s budget allocated, and who is involved in that process?"
+          ]
+        },
+        {
+          "text": "Does your team have a timeline for this season that aligns with your goals?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How are responsibilities assigned and tracked over the course of a season?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Do each of your team members have a specific role or sub-team?",
+          "required": null,
+          "follow_ups": [
+            "How are your leadership roles defined or set each season?",
+            "How did your team make decisions about assigning roles for the team?"
+          ]
+        },
+        {
+          "text": "How do you ensure new, or potential team members feel connected and engaged with the team from the start?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How do you help grow team members into future leaders of the team?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How does your team balance short-term needs with long-term planning?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What gets in the way of your team doing its best work, apart from time?",
+          "required": null,
+          "follow_ups": [
+            "How does your team respond to those challenges?",
+            "How does your team manage risks that can affect the team’s dynamic?"
+          ]
+        },
+        {
+          "text": "How does your team plan their season’s efforts?",
+          "required": null,
+          "follow_ups": [
+            "How did your team decide what items should be added to the plan?",
+            "What tools did your team use?",
+            "How does your team assign effort and track progress?"
+          ]
+        },
+        {
+          "text": "Does your team have a plan for maintaining or sustaining their finances without relying on a single or few large sources of income?",
+          "required": null,
+          "follow_ups": [
+            "How does your team track and measure the success of this plan?",
+            "How does your team ensure that your team’s plan is communicated to all team members?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Innovate Award",
+      "questions": [
+        {
+          "text": "How does your team brainstorm ideas?",
+          "required": null,
+          "follow_ups": [
+            "How did your team decide which ideas to implement?"
+          ]
+        },
+        {
+          "text": "Walk us through the process that your team used to come up with your design:",
+          "required": null,
+          "follow_ups": [
+            "Did your process change through the season?",
+            "If so, why?",
+            "If not, why not?"
+          ]
+        },
+        {
+          "text": "What were your team’s overall goals and/or strategies for this season?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Is there an aspect of your robot that you consider unique or creative?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How did your team evaluate your design to ensure that it met your team’s goals?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What criteria or process did your team use to determine the success of the design?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Which of your team’s game objectives does your robot achieve?",
+          "required": null,
+          "follow_ups": [
+            "What actions or tasks within a match is it able to reliably score in?",
+            "How did your team test for reliability?",
+            "Did your team evaluate other factors?"
+          ]
+        },
+        {
+          "text": "How did your team capture what worked and what did not work with the robot?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Did your team take any risks or unique approaches when building the robot for this season?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Can you tell us what evolution or iteration that your robot features took this season?",
+          "required": null,
+          "follow_ups": [
+            "Did your team use any process for determining what changes to make?"
+          ]
+        },
+        {
+          "text": "(For Pit Interviews Only) Can you share any CAD drawings or sketches or photos that highlight your design evolution?",
+          "required": null,
+          "follow_ups": [],
+          "notes": "N/A"
+        },
+        {
+          "text": "What risks did your team identify with your design?",
+          "required": null,
+          "follow_ups": [
+            "What has your team changed or edited based on the risk(s)?",
+            "How did your team determine if that risk was mitigated?",
+            "Can you tell us about the trade-offs that your team looked at?",
+            "Can you tell us about any unexpected failures that your team encountered along the way and what you did about that?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Control Award",
+      "questions": [
+        {
+          "text": "What sensors and hardware did your team use on your robot?",
+          "required": null,
+          "follow_ups": [
+            "What worked, what did not, and why?"
+          ]
+        },
+        {
+          "text": "Can you talk about the code used on the robot?",
+          "required": null,
+          "follow_ups": [
+            "What pre-programmed libraries or outside resources did your team use to program your robot?",
+            "Did your team write any custom libraries or routines to handle specific functions on your robot?"
+          ]
+        },
+        {
+          "text": "Which software solutions worked, which did not, and why?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How did your team capture their learnings with what worked and what did not work?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What criteria or process did your team use to determine if a component is working or not working?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How does your robot:",
+          "required": null,
+          "follow_ups": [
+            "Know where it is on the field?",
+            "Control acquisition of scoring elements in Auto and/or Teleop?",
+            "Measure and control the speed of the motors?"
+          ]
+        },
+        {
+          "text": "What enhancements did your team program to assist the drivers during Teleop?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What were your team’s design goals for the Auto period?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What specific game tasks was your team trying to improve or solve with your control system?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Describe the engineering process your team followed to develop your robot's most complex autonomous routine or control feature?",
+          "required": null,
+          "follow_ups": [
+            "Did you find that it worked well for your team?",
+            "What was the biggest obstacle or failure your team encountered?",
+            "How did your team measure reliability?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Design Award",
+      "questions": [
+        {
+          "text": "How did your team come up with the overall design of your robot?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How did your team balance competing factors in your design?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What game or design strategies did your team outline at the beginning of the season?",
+          "required": null,
+          "follow_ups": [
+            "How does your robot meet these strategies?"
+          ]
+        },
+        {
+          "text": "How does your team measure effectiveness in meeting your team goals for the robot’s performance?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What tools did your team use to brainstorm or evaluate different design elements for your robot?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What process did your team use to determine if a specific design element helps to meet your team’s goals?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How did your team document your goals?",
+          "required": null,
+          "follow_ups": [
+            "What planning did you do to ensure you were going to meet your goals?"
+          ]
+        },
+        {
+          "text": "Did your team look at how components work together when designing your robot?",
+          "required": null,
+          "follow_ups": [
+            "Did you look at each component separately or as a single system or sub-systems?",
+            "How did this affect your design process?"
+          ]
+        },
+        {
+          "text": "Did you have to make any compromises on your design from your goals?",
+          "required": null,
+          "follow_ups": [
+            "If so, what did you do?"
+          ]
+        },
+        {
+          "text": "How does your team balance functionality, simplicity, and reliability?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What specific problem did your team encounter during your season that influenced the current design of your robot?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What did your team choose to optimize on the robot if you could not do everything?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Did your team's solution originate from an existing design (e.g., in industry, another sport, or a previous season), or was it a completely novel concept?",
+          "required": null,
+          "follow_ups": [
+            "How did your team translate that inspiration into a functional design?",
+            "Did your team have to compromise or change any of your goals for playing this year’s game?"
+          ]
+        }
+      ]
+    },
+    {
+      "award": "Judges’ Choice Award",
+      "questions": [
+        {
+          "text": "We know that every team has challenges. Can you tell us a little about how your team successfully overcame the challenges you encountered this season?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "How would your team describe your season and why?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Tell us your story – how is your team making a difference through FIRST?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Can you give us a couple of examples to tell us what has it meant to you to be on a FIRST team?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "In what ways is your team unique?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "What is the one thing that we did not ask about that you most want the Judges to know?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "If you could select one achievement this season—whether it is a specific robot feature, a unique team dynamic, or a community project—that you feel no other team has replicated, what would that be, and why does it represent your team's unique identity?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Tell us about a significant non-robotics challenge your team faced this season, such as sustainability, a logistical hurdle, or funding?",
+          "required": null,
+          "follow_ups": [
+            "How did you overcome this?"
+          ]
+        },
+        {
+          "text": "Does your team have any individuals or subgroups in your team that have a huge impact on the team but do not fit into a traditional team role?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Describe a major failure or setback your team experienced—it could be a robot component failure, a lost grant, or a team conflict.",
+          "required": null,
+          "follow_ups": [
+            "How did this failure force your team to think differently, leading to an unforeseen positive outcome or discovery that has changed how your team operates?"
+          ]
+        },
+        {
+          "text": "(New Team) How did your team quickly bridge the knowledge gap to become competitive?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "(Experienced Team) How did your team’s knowledge transfer lead to a part or subsystem that was completely built and owned by a new member?",
+          "required": null,
+          "follow_ups": []
+        },
+        {
+          "text": "Does your team have any process to ensure the often 'unseen' essential tasks (like detailed wiring organization, safety compliance, or sponsor communication) are consistently valued, documented, and fully integrated into your season plan?",
+          "required": null,
+          "follow_ups": [
+            "What does that look like?"
+          ]
+        },
+        {
+          "text": "How did your team come together?",
+          "required": null,
+          "follow_ups": [
+            "Did you know each other before being on the same FIRST Tech Challenge team?"
+          ]
+        }
+      ]
+    }
+  ]
+}

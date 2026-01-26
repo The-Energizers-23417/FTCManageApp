@@ -3,6 +3,7 @@ import 'package:ftcmanageapp/program-files/backend/widgets/appbar-top.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// A page that provides information about the developers and the team behind the app.
+/// Includes version logs and social media links.
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
 
@@ -158,6 +159,37 @@ class _AboutUsPageState extends State<AboutUsPage> {
             ),
 
             const SizedBox(height: 40),
+
+            // Open Source Contribution Section
+            Card(
+              elevation: 0,
+              color: theme.colorScheme.primaryContainer.withAlpha(50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "Want to contribute or view the code?",
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _launchURL('https://github.com/energizers23417');
+                      },
+                      icon: const Icon(Icons.code),
+                      label: const Text("View on GitHub"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 40),
             
             // Social Media Integration
             Text(
@@ -194,46 +226,32 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
             const SizedBox(height: 40),
             
-            // Version History and Features
+            // Current Release Log
             _buildSection(
               theme,
-              "Release Log - v1.0",
-              "Welcome to our first release! This toolkit includes:\n\n"
-              "• Scouting & Match Simulations\n"
-              "• Auto Path Planning tools\n"
-              "• Team Management: Scrumboard & Hours\n"
-              "• Battery Management & Checklists",
+              "Release Log - v1.1 (Business & Engineering Update)",
+              "What's new in this version:\n\n"
+              "• Business Hub: Centralized dashboard for team finances and outreach.\n"
+              "• Sponsor Manager: Kanban-style board to track sponsorships with automatic income sync.\n"
+              "• Finance Tracking: Separate modules for Income and Expenses with category tags.\n"
+              "• Event Organizer: Plan tournaments with integrated checklists and financial logging.\n"
+              "• Robot Configuration: Manage Hub ports (Motors, Servos, Sensors) with Java code export.\n"
+              "• Pit Interview Practice: Interactive tool with shuffle mode and team experience filtering.\n"
+              "• Portfolio Tools: Professional financial report export for your Engineering Portfolio.",
             ),
 
-            const SizedBox(height: 40),
-            
-            // Open Source Contribution Section
-            Card(
-              elevation: 0,
-              color: theme.colorScheme.primaryContainer.withAlpha(50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      "Want to contribute or view the code?",
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        _launchURL('https://github.com/energizers23417');
-                      },
-                      icon: const Icon(Icons.code),
-                      label: const Text("View on GitHub"),
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 24),
+
+            // Older Release Log
+            _buildSection(
+              theme,
+              "Previous Release - v1.0",
+              "Features from the initial launch:\n\n"
+              "• Scouting & Match Simulations powered by FTC Scout.\n"
+              "• Auto Path Planning & Route visualization.\n"
+              "• Team Management: Scrumboard, Task Lists, and Hour Tracking.\n"
+              "• Battery Management system with voltage thresholds.\n"
+              "• Pre-match Checklists & Resource Hub.",
             ),
             
             const SizedBox(height: 40),
@@ -249,7 +267,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Version 1.0",
+                    "Version 1.1",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withAlpha(120),
                     ),

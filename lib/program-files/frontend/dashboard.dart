@@ -24,13 +24,20 @@ import 'package:ftcmanageapp/program-files/frontend/match_simulator_prediction.d
 import 'package:ftcmanageapp/program-files/frontend/mini_game.dart';
 import 'package:ftcmanageapp/program-files/frontend/other_team_prediction.dart';
 import 'package:ftcmanageapp/program-files/frontend/own_team_score.dart';
+import 'package:ftcmanageapp/program-files/frontend/pit_interview_practice.dart';
 import 'package:ftcmanageapp/program-files/frontend/point_estimate_calculator.dart';
 import 'package:ftcmanageapp/program-files/frontend/portfolio.dart';
 import 'package:ftcmanageapp/program-files/frontend/practice_calculator.dart';
 import 'package:ftcmanageapp/program-files/frontend/pre_match_checklist.dart';
 import 'package:ftcmanageapp/program-files/frontend/resource_hub.dart';
+import 'package:ftcmanageapp/program-files/frontend/robot_config.dart';
 import 'package:ftcmanageapp/program-files/frontend/scrumboard.dart';
 import 'package:ftcmanageapp/program-files/frontend/setup.dart';
+import 'package:ftcmanageapp/program-files/frontend/business_dashboard.dart';
+import 'package:ftcmanageapp/program-files/frontend/income_manager.dart';
+import 'package:ftcmanageapp/program-files/frontend/expense_manager.dart';
+import 'package:ftcmanageapp/program-files/frontend/sponsor_manager.dart';
+import 'package:ftcmanageapp/program-files/frontend/event_manager.dart';
 import 'package:ftcmanageapp/program-files/frontend/tasklist_team.dart';
 import 'package:ftcmanageapp/program-files/frontend/team_searcher.dart';
 import 'package:ftcmanageapp/program-files/frontend/widgets/dashboard_tile.dart';
@@ -425,9 +432,25 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
       _DashboardSection(
-        title: 'Tools & Resources',
+        title: 'Tools & Engineering',
         icon: Icons.build_circle_outlined,
         tiles: [
+          _DashboardTileDef(
+            label: 'Robot Configuration',
+            icon: Icons.settings_input_component,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RobotConfigPage()),
+            ),
+          ),
+          _DashboardTileDef(
+            label: 'Pit Practice',
+            icon: Icons.question_answer_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PitInterviewPracticePage()),
+            ),
+          ),
           _DashboardTileDef(
             label: 'Resource Hub',
             icon: Icons.menu_book_outlined,
@@ -466,6 +489,52 @@ class _DashboardPageState extends State<DashboardPage> {
             onTap: (context) => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PortfolioPage()),
+            ),
+          ),
+        ],
+      ),
+      _DashboardSection(
+        title: 'Business & Outreach',
+        icon: Icons.business_center_outlined,
+        tiles: [
+          _DashboardTileDef(
+            label: 'Business Hub',
+            icon: Icons.dashboard_customize_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BusinessDashboardPage()),
+            ),
+          ),
+          _DashboardTileDef(
+            label: 'Income Tracker',
+            icon: Icons.add_chart,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const IncomeManagerPage()),
+            ),
+          ),
+          _DashboardTileDef(
+            label: 'Expense Tracker',
+            icon: Icons.analytics_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ExpenseManagerPage()),
+            ),
+          ),
+          _DashboardTileDef(
+            label: 'Sponsor Board',
+            icon: Icons.handshake_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SponsorManagerPage()),
+            ),
+          ),
+          _DashboardTileDef(
+            label: 'Event Organizer',
+            icon: Icons.event_note_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EventManagerPage()),
             ),
           ),
         ],
