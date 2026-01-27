@@ -225,19 +225,34 @@ class _AboutUsPageState extends State<AboutUsPage> {
             ),
 
             const SizedBox(height: 40),
-            
+
             // Current Release Log
+            _buildSection(
+              theme,
+              "Release Log - v1.1.1 (Bug fix + Improvements on UI)",
+              "What's new in this version:\n\n"
+              "• UI Enhancements: Improved Dashboard layout for Ultra-Wide and 4K monitors.\n"
+              "• Dashboard Controls: Added 'Expand All' and 'Collapse All' buttons for category management.\n"
+              "• Persistence: The app now remembers your collapsed/expanded sections on the dashboard.\n"
+              "• Login Security: Added 'Remember Me' feature to securely store credentials locally.\n"
+              "• Time Tracking: New manual hour entry mode to add work sessions retrospectively.\n"
+              "• Stability: Fixed issues with navigation during login and theme loading processes.",
+            ),
+
+            const SizedBox(height: 24),
+            
+            // Previous Release Log
             _buildSection(
               theme,
               "Release Log - v1.1 (Business & Engineering Update)",
               "What's new in this version:\n\n"
               "• Business Hub: Centralized dashboard for team finances and outreach.\n"
-              "• Sponsor Manager: Kanban-style board to track sponsorships with automatic income sync.\n"
-              "• Finance Tracking: Separate modules for Income and Expenses with category tags.\n"
-              "• Event Organizer: Plan tournaments with integrated checklists and financial logging.\n"
-              "• Robot Configuration: Manage Hub ports (Motors, Servos, Sensors) with Java code export.\n"
-              "• Pit Interview Practice: Interactive tool with shuffle mode and team experience filtering.\n"
-              "• Portfolio Tools: Professional financial report export for your Engineering Portfolio.",
+              "• Sponsor Manager: Kanban-style board to track sponsorships.\n"
+              "• Finance Tracking: Separate modules for Income and Expenses.\n"
+              "• Event Organizer: Plan tournaments with integrated checklists.\n"
+              "• Robot Configuration: Hub port management with Java export.\n"
+              "• Pit Interview Practice: Interactive tool with shuffle mode.\n"
+              "• Portfolio Tools: Professional financial report export.",
             ),
 
             const SizedBox(height: 24),
@@ -267,7 +282,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Version 1.1",
+                    "Version 1.1.1",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withAlpha(120),
                     ),

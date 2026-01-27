@@ -249,6 +249,51 @@ class _HourRegistrationPageState extends State<HourRegistrationPage> {
     }
   }
 
+  /// Manually adds a session that happened in the past.
+  Future<void> _addManualSession(String uid) async {
+    if (_selectedMemberName == null) {
+      _toast('Please select a team member first.');
+      return;
+    }
+
+    final res = await showDialog<_ManualEntryResult>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _ManualEntryDialog(
+        initialMemberName: _selectedMemberName!,
+      ),
+    );
+
+    if (res == null) return;
+
+    setState(() => _busy = true);
+    try {
+      final start = res.startAt;
+      final end = res.endAt;
+      final durationMinutes = end.difference(start).inMinutes;
+
+      await _sessionsRef(uid).add({
+        'isRunning': false,
+        'memberName': res.memberName,
+        'clockInNote': 'Manual entry',
+        'startAt': Timestamp.fromDate(start),
+        'endAt': Timestamp.fromDate(end),
+        'durationMinutes': durationMinutes,
+        'review': res.review.trim(),
+        'effort': res.effort,
+        'effectiveness': res.effectiveness,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      _toast('Manual session saved!');
+    } catch (e) {
+      _toast('Failed to save manual session: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   void _toast(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -296,7 +341,7 @@ class _HourRegistrationPageState extends State<HourRegistrationPage> {
                 },
               ),
               const SizedBox(height: 12),
-              _historyHeader(context),
+              _historyHeader(context, user.uid),
               const SizedBox(height: 8),
               // Past Sessions List
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -577,7 +622,7 @@ class _HourRegistrationPageState extends State<HourRegistrationPage> {
     );
   }
 
-  Widget _historyHeader(BuildContext context) {
+  Widget _historyHeader(BuildContext context, String uid) {
     return Row(
       children: [
         Icon(Icons.history, color: Theme.of(context).colorScheme.primary),
@@ -585,6 +630,12 @@ class _HourRegistrationPageState extends State<HourRegistrationPage> {
         Text(
           'Recent sessions',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const Spacer(),
+        TextButton.icon(
+          onPressed: _busy ? null : () => _addManualSession(uid),
+          icon: const Icon(Icons.add, size: 20),
+          label: const Text('Add manually'),
         ),
       ],
     );
@@ -829,6 +880,212 @@ class _ReviewDialogState extends State<_ReviewDialog> {
                 ),
               ),
             ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Data model for the manual entry dialog.
+class _ManualEntryResult {
+  final String memberName;
+  final DateTime startAt;
+  final DateTime endAt;
+  final String review;
+  final int effort;
+  final int effectiveness;
+
+  const _ManualEntryResult({
+    required this.memberName,
+    required this.startAt,
+    required this.endAt,
+    required this.review,
+    required this.effort,
+    required this.effectiveness,
+  });
+}
+
+/// Dialog for manually entering hours after the session is over.
+class _ManualEntryDialog extends StatefulWidget {
+  final String initialMemberName;
+
+  const _ManualEntryDialog({required this.initialMemberName});
+
+  @override
+  State<_ManualEntryDialog> createState() => _ManualEntryDialogState();
+}
+
+class _ManualEntryDialogState extends State<_ManualEntryDialog> {
+  late DateTime _date;
+  late TimeOfDay _startTime;
+  late TimeOfDay _endTime;
+  final _controller = TextEditingController();
+  int _effort = 3;
+  int _effectiveness = 3;
+
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _date = now;
+    _startTime = TimeOfDay(hour: now.hour - 1, minute: now.minute);
+    _endTime = TimeOfDay.fromDateTime(now);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final d = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (d != null) setState(() => _date = d);
+  }
+
+  Future<void> _pickStartTime() async {
+    final t = await showTimePicker(
+      context: context,
+      initialTime: _startTime,
+    );
+    if (t != null) setState(() => _startTime = t);
+  }
+
+  Future<void> _pickEndTime() async {
+    final t = await showTimePicker(
+      context: context,
+      initialTime: _endTime,
+    );
+    if (t != null) setState(() => _endTime = t);
+  }
+
+  void _submit() {
+    final review = _controller.text.trim();
+    if (review.isEmpty) {
+      setState(() => _error = 'Please write a short summary.');
+      return;
+    }
+
+    final start = DateTime(_date.year, _date.month, _date.day, _startTime.hour, _startTime.minute);
+    final end = DateTime(_date.year, _date.month, _date.day, _endTime.hour, _endTime.minute);
+
+    if (end.isBefore(start)) {
+      setState(() => _error = 'End time must be after start time.');
+      return;
+    }
+
+    Navigator.pop(
+      context,
+      _ManualEntryResult(
+        memberName: widget.initialMemberName,
+        startAt: start,
+        endAt: end,
+        review: review,
+        effort: _effort,
+        effectiveness: _effectiveness,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String two(int x) => x.toString().padLeft(2, '0');
+    final dateStr = '${two(_date.day)}/${two(_date.month)}/${_date.year}';
+    final startStr = '${two(_startTime.hour)}:${two(_startTime.minute)}';
+    final endStr = '${two(_endTime.hour)}:${two(_endTime.minute)}';
+
+    return AlertDialog(
+      title: const Text('Manual Hour Entry'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Date'),
+              subtitle: Text(dateStr),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: _pickDate,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Start'),
+                    subtitle: Text(startStr),
+                    onTap: _pickStartTime,
+                  ),
+                ),
+                Expanded(
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('End'),
+                    subtitle: Text(endStr),
+                    onTap: _pickEndTime,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(),
+            TextField(
+              controller: _controller,
+              maxLines: 3,
+              decoration: InputDecoration(
+                labelText: 'What did you do?',
+                hintText: 'Work summary...',
+                errorText: _error,
+              ),
+              onChanged: (_) {
+                if (_error != null) setState(() => _error = null);
+              },
+            ),
+            const SizedBox(height: 14),
+            _slider(
+              label: 'Effort (1-5)',
+              value: _effort,
+              onChanged: (v) => setState(() => _effort = v),
+            ),
+            _slider(
+              label: 'Effectiveness (1-5)',
+              value: _effectiveness,
+              onChanged: (v) => setState(() => _effectiveness = v),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        FilledButton(onPressed: _submit, child: const Text('Save session')),
+      ],
+    );
+  }
+
+  Widget _slider({required String label, required int value, required ValueChanged<int> onChanged}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: value.toDouble(),
+                min: 1,
+                max: 5,
+                divisions: 4,
+                onChanged: (v) => onChanged(v.round()),
+              ),
+            ),
+            Text('$value', style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ],

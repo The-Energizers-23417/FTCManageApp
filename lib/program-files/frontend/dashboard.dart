@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-connection/api_global.dart';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-calculations/team_searcher.dart' as scout;
 
@@ -38,6 +39,7 @@ import 'package:ftcmanageapp/program-files/frontend/income_manager.dart';
 import 'package:ftcmanageapp/program-files/frontend/expense_manager.dart';
 import 'package:ftcmanageapp/program-files/frontend/sponsor_manager.dart';
 import 'package:ftcmanageapp/program-files/frontend/event_manager.dart';
+import 'package:ftcmanageapp/program-files/frontend/strategy_whiteboard.dart';
 import 'package:ftcmanageapp/program-files/frontend/tasklist_team.dart';
 import 'package:ftcmanageapp/program-files/frontend/team_searcher.dart';
 import 'package:ftcmanageapp/program-files/frontend/widgets/dashboard_tile.dart';
@@ -115,6 +117,9 @@ class _DashboardPageState extends State<DashboardPage> {
   scout.TeamMatchSummary? _nextMatch;
   String? _eventCode;
 
+  // Section visibility state
+  Map<String, bool> _sectionVisibility = {};
+
   // --- Easter Egg State ---
   int _easterEggTaps = 0;
   bool _overclockMode = false;
@@ -127,6 +132,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _loadWelcomeData();
     _listenToUserData();
+    _loadSectionVisibility();
   }
 
   @override
@@ -134,6 +140,57 @@ class _DashboardPageState extends State<DashboardPage> {
     _userDocSub?.cancel();
     _overclockTimer?.cancel();
     super.dispose();
+  }
+
+  /// Loads section visibility from SharedPreferences.
+  Future<void> _loadSectionVisibility() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sections = _buildSections();
+    final Map<String, bool> visibility = {};
+    for (final section in sections) {
+      visibility[section.title] = prefs.getBool('section_visible_${section.title}') ?? true;
+    }
+    setState(() {
+      _sectionVisibility = visibility;
+    });
+  }
+
+  /// Toggles and saves section visibility.
+  Future<void> _toggleSection(String title) async {
+    final prefs = await SharedPreferences.getInstance();
+    final isVisible = !(_sectionVisibility[title] ?? true);
+    await prefs.setBool('section_visible_$title', isVisible);
+    setState(() {
+      _sectionVisibility[title] = isVisible;
+    });
+  }
+
+  /// Expands all sections.
+  Future<void> _expandAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sections = _buildSections();
+    final Map<String, bool> visibility = {};
+    for (final section in sections) {
+      visibility[section.title] = true;
+      await prefs.setBool('section_visible_${section.title}', true);
+    }
+    setState(() {
+      _sectionVisibility = visibility;
+    });
+  }
+
+  /// Collapses all sections.
+  Future<void> _collapseAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sections = _buildSections();
+    final Map<String, bool> visibility = {};
+    for (final section in sections) {
+      visibility[section.title] = false;
+      await prefs.setBool('section_visible_${section.title}', false);
+    }
+    setState(() {
+      _sectionVisibility = visibility;
+    });
   }
 
   /// Triggers the "Overclock Mode" (Party Mode) easter egg.
@@ -398,6 +455,14 @@ class _DashboardPageState extends State<DashboardPage> {
         icon: Icons.lightbulb_outline,
         tiles: [
           _DashboardTileDef(
+            label: 'Strategy Whiteboard',
+            icon: Icons.draw_outlined,
+            onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StrategyWhiteboardPage()),
+            ),
+          ),
+          _DashboardTileDef(
             label: 'Pre-Match Checklist',
             icon: Icons.fact_check_outlined,
             onTap: (context) => Navigator.push(
@@ -598,8 +663,17 @@ class _DashboardPageState extends State<DashboardPage> {
           int crossAxisCount;
           double childAspectRatio;
 
-          // Responsive grid layout adjustment based on screen width.
-          if (width >= 1400) {
+          // Advanced Responsive grid for ultra-wide monitors
+          if (width >= 2600) {
+            crossAxisCount = 7;
+            childAspectRatio = 2.2;
+          } else if (width >= 2200) {
+            crossAxisCount = 6;
+            childAspectRatio = 2.1;
+          } else if (width >= 1800) {
+            crossAxisCount = 5;
+            childAspectRatio = 2.0;
+          } else if (width >= 1400) {
             crossAxisCount = 4;
             childAspectRatio = 1.8;
           } else if (width >= 1000) {
@@ -617,13 +691,47 @@ class _DashboardPageState extends State<DashboardPage> {
             padding: const EdgeInsets.all(12),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1600),
+                constraints: const BoxConstraints(maxWidth: 3000),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       // Overview summary card
                       _welcomeHeaderCard(theme),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
+                      
+                      // Global controls for sections
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _expandAll,
+                                icon: const Icon(Icons.unfold_more, size: 18),
+                                label: const Text("Expand All"),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _collapseAll,
+                                icon: const Icon(Icons.unfold_less, size: 18),
+                                label: const Text("Collapse All"),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
                       // Feature grid sections
                       for (final section in sections)
                         _buildSection(
@@ -945,42 +1053,58 @@ class _DashboardPageState extends State<DashboardPage> {
     required double childAspectRatio,
   }) {
     final theme = Theme.of(context);
+    final isVisible = _sectionVisibility[section.title] ?? true;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: Row(
-            children: [
-              Icon(section.icon, size: 20, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              Text(
-                section.title,
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ],
+        InkWell(
+          onTap: () => _toggleSection(section.title),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Row(
+              children: [
+                Icon(section.icon, size: 20, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    section.title,
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Icon(
+                  isVisible ? Icons.expand_less : Icons.expand_more,
+                  color: theme.textTheme.bodySmall?.color,
+                ),
+              ],
+            ),
           ),
         ),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: section.tiles.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: childAspectRatio,
+        AnimatedCrossFade(
+          firstChild: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: section.tiles.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: childAspectRatio,
+            ),
+            itemBuilder: (context, tileIndex) {
+              final tile = section.tiles[tileIndex];
+              return DashboardTile(
+                label: tile.label,
+                icon: tile.icon,
+                onTap: tile.onTap == null ? null : () => tile.onTap?.call(context),
+                comingSoon: tile.comingSoon,
+              );
+            },
           ),
-          itemBuilder: (context, tileIndex) {
-            final tile = section.tiles[tileIndex];
-            return DashboardTile(
-              label: tile.label,
-              icon: tile.icon,
-              onTap: tile.onTap == null ? null : () => tile.onTap?.call(context),
-              comingSoon: tile.comingSoon,
-            );
-          },
+          secondChild: const SizedBox(width: double.infinity),
+          crossFadeState: isVisible ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 300),
         ),
         const SizedBox(height: 16),
       ],

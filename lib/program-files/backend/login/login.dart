@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ftcmanageapp/program-files/frontend/setup.dart';
 import 'package:ftcmanageapp/program-files/frontend/dashboard.dart';
@@ -24,103 +25,132 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _loading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
   String? _error;
   String? _info;
 
   // Toggle between Login and Registration mode
   bool _isRegisterMode = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Load credentials after the first frame
+    Future.microtask(() => _loadSavedCredentials());
+  }
+
+  /// Loads saved credentials from SharedPreferences.
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedEmail = prefs.getString('remembered_email');
+      final savedPassword = prefs.getString('remembered_password');
+      final rememberMe = prefs.getBool('remember_me') ?? false;
+
+      if (rememberMe && mounted) {
+        setState(() {
+          _emailController.text = savedEmail ?? '';
+          _passwordController.text = savedPassword ?? '';
+          _rememberMe = true;
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading credentials: $e");
+    }
+  }
+
+  /// Saves or clears credentials in SharedPreferences (safe execution).
+  Future<void> _saveCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('remembered_email', _emailController.text.trim());
+        await prefs.setString('remembered_password', _passwordController.text.trim());
+        await prefs.setBool('remember_me', true);
+      } else {
+        await prefs.remove('remembered_email');
+        await prefs.remove('remembered_password');
+        await prefs.setBool('remember_me', false);
+      }
+    } catch (e) {
+      debugPrint("Error saving credentials: $e");
+    }
+  }
+
   /// Handles the form submission for both login and registration.
   Future<void> _submit() async {
+    if (_loading) return;
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
-    final team = _teamController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => _error = "Please fill in email and password.");
+      return;
+    }
 
     setState(() {
       _error = null;
       _info = null;
+      _loading = true;
     });
 
-    if (!_isRegisterMode) {
-      // Login Logic
-      if (email.isEmpty || password.isEmpty) {
-        setState(() => _error = "Please fill in email and password.");
-        return;
-      }
-
-      try {
-        setState(() => _loading = true);
-
-        // Authenticate user with Firebase
+    try {
+      if (!_isRegisterMode) {
+        // 1. Authenticate user with Firebase
         final UserCredential cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-        if (!mounted) return;
+        // 2. Save credentials if needed (non-blocking)
+        _saveCredentials();
 
-        // Load personalized theme settings
-        final themeService = context.read<ThemeService>();
-        await themeService.loadFromFirestore();
-
-        if (!mounted) return;
-
-        // Check if the user has completed the initial setup
+        // 3. Check if the user has completed the initial setup
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(cred.user!.uid)
             .get();
         
-        final hasSetup = userDoc.data()?.containsKey('setupData') ?? false;
+        final hasSetup = userDoc.exists && (userDoc.data()?.containsKey('setupData') ?? false);
 
         if (!mounted) return;
 
-        // Redirect based on setup status
+        // 4. Load theme in background
+        context.read<ThemeService>().loadFromFirestore();
+
+        // 5. Navigate to the appropriate page
         if (hasSetup) {
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const DashboardPage()),
+            (route) => false,
           );
         } else {
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const SetupPage()),
+            (route) => false,
           );
         }
-      } on FirebaseAuthException catch (e) {
-        setState(() => _error = e.message ?? "Login failed.");
-      } finally {
-        if (mounted) {
-          setState(() => _loading = false);
+      } else {
+        // Registration Logic
+        final confirmPassword = _confirmPasswordController.text.trim();
+        final team = _teamController.text.trim();
+
+        if (team.isEmpty || confirmPassword.isEmpty) {
+          throw Exception("Please fill in all fields.");
         }
-      }
-    } else {
-      // Registration Logic
-      if (email.isEmpty || password.isEmpty || team.isEmpty || confirmPassword.isEmpty) {
-        setState(
-              () => _error =
-          "Please fill in all fields to create an account.",
-        );
-        return;
-      }
 
-      if (password != confirmPassword) {
-        setState(() => _error = "Passwords do not match.");
-        return;
-      }
+        if (password != confirmPassword) {
+          throw Exception("Passwords do not match.");
+        }
 
-      try {
-        setState(() => _loading = true);
-
-        // Create new user account in Firebase
         final cred = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
-        // Set display name to team number
         await cred.user?.updateDisplayName('Team $team');
 
-        // Initialize user document in Firestore
         await FirebaseFirestore.instance
             .collection('users')
             .doc(cred.user!.uid)
@@ -131,55 +161,41 @@ class _LoginPageState extends State<LoginPage> {
         });
 
         if (!mounted) return;
+        context.read<ThemeService>().loadFromFirestore();
 
-        // Initialize theme settings for the new user
-        final themeService = context.read<ThemeService>();
-        await themeService.loadFromFirestore();
-
-        if (!mounted) return;
-
-        // New users are sent directly to the Setup page
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const SetupPage()),
+          (route) => false,
         );
-      } on FirebaseAuthException catch (e) {
-        setState(() => _error = e.message ?? "Account creation failed.");
-      } finally {
-        if (mounted) {
-          setState(() => _loading = false);
-        }
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => _error = e.message ?? "Login failed.");
+    } catch (e) {
+      setState(() => _error = e.toString().replaceFirst("Exception: ", ""));
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
       }
     }
   }
 
-  /// Sends a password reset email to the entered address.
+  /// Sends a password reset email.
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
-
-    setState(() {
-      _error = null;
-      _info = null;
-    });
-
     if (email.isEmpty) {
-      setState(() => _error = "Please enter your email first.");
+      setState(() => _error = "Please enter your email address first.");
       return;
     }
 
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      setState(() {
-        _info = "Password reset email sent. Check your inbox (and spam folder).";
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _error = e.message ?? "Failed to send reset email.";
-      });
+      setState(() => _info = "Password reset email sent. Check your inbox.");
+    } catch (e) {
+      setState(() => _error = "Failed to send reset email.");
     }
   }
 
-  /// Toggles between login and register UI modes.
   void _toggleMode() {
     setState(() {
       _isRegisterMode = !_isRegisterMode;
@@ -204,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
 
     final titleText = _isRegisterMode ? "Create account" : "Team login";
-    final buttonText = _isRegisterMode ? "Create account" : "Log in";
+    final buttonText = _isRegisterMode ? "Register" : "Log in";
     final switchText = _isRegisterMode
         ? "Already have an account? Log in"
         : "No account yet? Create one";
@@ -225,8 +241,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Text(
                     _isRegisterMode
-                        ? "Fill in your details to create an account."
-                        : "Log in to continue.",
+                        ? "Create your team account"
+                        : "Welcome back!",
                     style: theme.textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -246,8 +262,9 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _emailController,
                     decoration: const InputDecoration(
                       labelText: "Email",
-                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email_outlined),
                     ),
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 12),
 
@@ -256,75 +273,62 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: "Password",
-                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility : Icons.visibility_off,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  
+                  if (!_isRegisterMode)
+                    CheckboxListTile(
+                      title: const Text("Remember me"),
+                      value: _rememberMe,
+                      onChanged: (val) => setState(() => _rememberMe = val ?? false),
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
 
                   if (_isRegisterMode) ...[
+                    const SizedBox(height: 12),
                     TextField(
                       controller: _confirmPasswordController,
                       obscureText: _obscurePassword,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Confirm Password",
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
+                        prefixIcon: Icon(Icons.lock_clock_outlined),
                       ),
                     ),
                     const SizedBox(height: 12),
-                  ],
-
-                  if (_isRegisterMode) ...[
                     TextField(
                       controller: _teamController,
                       decoration: const InputDecoration(
                         labelText: "Team number",
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.tag),
                       ),
                       keyboardType: TextInputType.number,
                     ),
-                    const SizedBox(height: 12),
                   ],
 
-                  if (_error != null) ...[
-                    Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.red),
+                  const SizedBox(height: 16),
+                  
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
                     ),
-                    const SizedBox(height: 8),
-                  ],
-                  if (_info != null) ...[
-                    Text(
-                      _info!,
-                      style: const TextStyle(color: Colors.green),
+                  if (_info != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(_info!, style: const TextStyle(color: Colors.green), textAlign: TextAlign.center),
                     ),
-                    const SizedBox(height: 8),
-                  ],
-
-                  const SizedBox(height: 8),
 
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
+                    height: 50,
                     child: ElevatedButton(
                       onPressed: _loading ? null : _submit,
                       child: _loading
@@ -333,7 +337,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
 
                   if (!_isRegisterMode)
                     TextButton(
