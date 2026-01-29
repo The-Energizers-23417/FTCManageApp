@@ -151,7 +151,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "This application is provided 'as is' without any warranties, express or implied. The developers (The Energizers 23417) shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use this service. Use of this application is entirely at your own risk.",
+                    "By using this app, you accept all risks and agree that the developers are not responsible for any damages incurred.",
                     style: theme.textTheme.bodySmall?.copyWith(height: 1.4),
                   ),
                 ],
@@ -179,7 +179,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       onPressed: () {
-                        _launchURL('https://github.com/energizers23417');
+                        _launchURL('https://github.com/The-Energizers-23417/FTCManageApp');
                       },
                       icon: const Icon(Icons.code),
                       label: const Text("View on GitHub"),
@@ -229,14 +229,28 @@ class _AboutUsPageState extends State<AboutUsPage> {
             // Current Release Log
             _buildSection(
               theme,
+              "Release Log - v1.2 (Security & Smart Search Update)",
+              "What's new in this version:\n\n"
+              "• Google Sign-In: Added support for one-tap login via Google (Mobile & Web).\n"
+              "• Fuzzy Search: Team searcher is now smarter and handles typos or partial names.\n"
+              "• Autocomplete: Prediction page now offers suggestions while typing to prevent errors.\n"
+              "• Navigation: Fixed 'back button bug' in search flows for a smoother experience.\n"
+              "• Dashboard Customization: Fine-grained control over which tiles to show, including detailed feature descriptions in Setup.\n"
+              "• Cloud Sync: All dashboard and tile visibility settings are now synced across devices via Firebase.\n"
+              "• Battery Shortcuts: Made the Dashboard battery status clickable for instant access.",
+            ),
+
+            const SizedBox(height: 24),
+
+            // Previous Release Log
+            _buildSection(
+              theme,
               "Release Log - v1.1.1 (Bug fix + Improvements on UI)",
               "What's new in this version:\n\n"
               "• UI Enhancements: Improved Dashboard layout for Ultra-Wide and 4K monitors.\n"
               "• Dashboard Controls: Added 'Expand All' and 'Collapse All' buttons for category management.\n"
-              "• Persistence: The app now remembers your collapsed/expanded sections on the dashboard.\n"
-              "• Login Security: Added 'Remember Me' feature to securely store credentials locally.\n"
-              "• Time Tracking: New manual hour entry mode to add work sessions retrospectively.\n"
-              "• Stability: Fixed issues with navigation during login and theme loading processes.",
+              "• Persistence: The app now remembers your collapsed/expanded sections locally.\n"
+              "• Password Reset: Added 'Forgot Password' link to the login screen.",
             ),
 
             const SizedBox(height: 24),
@@ -249,10 +263,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
               "• Business Hub: Centralized dashboard for team finances and outreach.\n"
               "• Sponsor Manager: Kanban-style board to track sponsorships.\n"
               "• Finance Tracking: Separate modules for Income and Expenses.\n"
-              "• Event Organizer: Plan tournaments with integrated checklists.\n"
               "• Robot Configuration: Hub port management with Java export.\n"
-              "• Pit Interview Practice: Interactive tool with shuffle mode.\n"
-              "• Portfolio Tools: Professional financial report export.",
+              "• Pit Interview Practice: Interactive tool with shuffle mode.",
             ),
 
             const SizedBox(height: 24),
@@ -265,8 +277,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
               "• Scouting & Match Simulations powered by FTC Scout.\n"
               "• Auto Path Planning & Route visualization.\n"
               "• Team Management: Scrumboard, Task Lists, and Hour Tracking.\n"
-              "• Battery Management system with voltage thresholds.\n"
-              "• Pre-match Checklists & Resource Hub.",
+              "• Battery Management system with voltage thresholds.",
             ),
             
             const SizedBox(height: 40),
@@ -282,7 +293,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Version 1.1.1",
+                    "Version 1.2",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withAlpha(120),
                     ),

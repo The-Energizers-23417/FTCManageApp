@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-connection/api_global.dart';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-calculations/team_searcher.dart' as scout;
 
@@ -44,32 +43,258 @@ import 'package:ftcmanageapp/program-files/frontend/tasklist_team.dart';
 import 'package:ftcmanageapp/program-files/frontend/team_searcher.dart';
 import 'package:ftcmanageapp/program-files/frontend/widgets/dashboard_tile.dart';
 
-/// Definition for a single tile on the dashboard.
-class _DashboardTileDef {
+/// Metadata for a single tile on the dashboard.
+class DashboardTileDef {
   final String label;
+  final String description;
   final IconData icon;
   final void Function(BuildContext context)? onTap;
 
   bool get comingSoon => onTap == null;
 
-  const _DashboardTileDef({
+  const DashboardTileDef({
     required this.label,
+    required this.description,
     required this.icon,
     this.onTap,
   });
 }
 
-/// Represents a grouped section of tiles on the dashboard.
-class _DashboardSection {
+/// Metadata for a grouped section of tiles on the dashboard.
+class DashboardSectionDef {
   final String title;
   final IconData icon;
-  final List<_DashboardTileDef> tiles;
+  final List<DashboardTileDef> tiles;
 
-  const _DashboardSection({
+  const DashboardSectionDef({
     required this.title,
     required this.icon,
     required this.tiles,
   });
+}
+
+/// Centralized provider for dashboard structure to ensure consistency across the app.
+class DashboardMetadata {
+  static List<DashboardSectionDef> getSections(BuildContext? context) {
+    return [
+      DashboardSectionDef(
+        title: 'Analysis & Insights',
+        icon: Icons.analytics_outlined,
+        tiles: [
+          DashboardTileDef(
+            label: 'Team Searcher',
+            description: 'Search for other FTC teams and see their stats.',
+            icon: Icons.person_search_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const TeamSearcherPage())),
+          ),
+          DashboardTileDef(
+            label: 'My Team Score',
+            description: 'Analyze your own team\'s scoring performance.',
+            icon: Icons.bar_chart_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const OwnTeamScorePage())),
+          ),
+          DashboardTileDef(
+            label: 'Other Team Prediction',
+            description: 'Predict the outcome of matches based on team data.',
+            icon: Icons.insights_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const OtherTeamPredictionPage())),
+          ),
+          DashboardTileDef(
+            label: 'Alliance Selection',
+            description: 'Tools to help with picking the best alliance partners.',
+            icon: Icons.groups_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const AllianceSelectionPage())),
+          ),
+        ],
+      ),
+      DashboardSectionDef(
+        title: 'Match Simulation & Scores',
+        icon: Icons.sports_esports_outlined,
+        tiles: [
+          DashboardTileDef(
+            label: 'Match Simulator',
+            description: 'Simulate matches to practice strategy.',
+            icon: Icons.play_circle_outline,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const MatchSimulatorPage())),
+          ),
+          DashboardTileDef(
+            label: 'Predictive Simulator',
+            description: 'Advanced simulation using historical performance.',
+            icon: Icons.query_stats_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const MatchSimulatorV2Page())),
+          ),
+          DashboardTileDef(
+            label: 'Points Calculator',
+            description: 'Quickly estimate match points during practice.',
+            icon: Icons.calculate_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const PointEstimateCalculatorPage())),
+          ),
+          DashboardTileDef(
+            label: 'Practice Score Keeper',
+            description: 'Track and log your scores during practice runs.',
+            icon: Icons.edit_note_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const PracticeCalculatorPage())),
+          ),
+          DashboardTileDef(
+            label: 'Drive Practice Game',
+            description: 'A fun mini-game to sharpen your driving reflexes.',
+            icon: Icons.videogame_asset_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const MiniGamePage())),
+          ),
+        ],
+      ),
+      DashboardSectionDef(
+        title: 'Preparation & Strategy',
+        icon: Icons.lightbulb_outline,
+        tiles: [
+          DashboardTileDef(
+            label: 'Strategy Whiteboard',
+            description: 'Draw and plan your match strategies visually.',
+            icon: Icons.draw_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const StrategyWhiteboardPage())),
+          ),
+          DashboardTileDef(
+            label: 'Pre-Match Checklist',
+            description: 'Ensure everything is ready before your match.',
+            icon: Icons.fact_check_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const PreMatchChecklistPage())),
+          ),
+          DashboardTileDef(
+            label: 'Auto Path Visualizer',
+            description: 'Visualize your autonomous paths on the field.',
+            icon: Icons.map_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const AutoPathVisualizerPage())),
+          ),
+          DashboardTileDef(
+            label: 'Auto Path Route',
+            description: 'Plan complex routes for your autonomous period.',
+            icon: Icons.alt_route_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => AutoPathRoutePage(title: 'Auto Path Route'))),
+          ),
+          DashboardTileDef(
+            label: 'Battery Management',
+            description: 'Track battery usage and charging status.',
+            icon: Icons.battery_charging_full_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const BatteryPage())),
+          ),
+        ],
+      ),
+      DashboardSectionDef(
+        title: 'Tools & Engineering',
+        icon: Icons.build_circle_outlined,
+        tiles: [
+          DashboardTileDef(
+            label: 'Robot Configuration',
+            description: 'Manage your robot\'s hardware settings and config.',
+            icon: Icons.settings_input_component,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const RobotConfigPage())),
+          ),
+          DashboardTileDef(
+            label: 'Pit Practice',
+            description: 'Prepare for judging with practice interviews.',
+            icon: Icons.question_answer_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const PitInterviewPracticePage())),
+          ),
+          DashboardTileDef(
+            label: 'Resource Hub',
+            description: 'Competition manual and rules.',
+            icon: Icons.menu_book_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const ResourceHubPage())),
+          ),
+          DashboardTileDef(
+            label: 'Time Tracking',
+            description: 'Log and manage team member participation hours.',
+            icon: Icons.timer_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const HourRegistrationPage())),
+          ),
+          DashboardTileDef(
+            label: 'Scrumboard',
+            icon: Icons.view_kanban_outlined,
+            description: 'Manage engineering tasks using Scrum methodology.',
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const ScrumBoardPage())),
+          ),
+          DashboardTileDef(
+            label: 'Team Tasklist',
+            description: 'General to-do list for team organization.',
+            icon: Icons.checklist_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const TaskListTeamPage())),
+          ),
+          DashboardTileDef(
+            label: 'Portfolio',
+            description: 'Track and organize entries for your Engineering Portfolio.',
+            icon: Icons.auto_stories_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const PortfolioPage())),
+          ),
+        ],
+      ),
+      DashboardSectionDef(
+        title: 'Business & Outreach',
+        icon: Icons.business_center_outlined,
+        tiles: [
+          DashboardTileDef(
+            label: 'Business Hub',
+            description: 'Central dashboard for business and outreach tracking.',
+            icon: Icons.dashboard_customize_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const BusinessDashboardPage())),
+          ),
+          DashboardTileDef(
+            label: 'Income Tracker',
+            description: 'Log and monitor team income and grants.',
+            icon: Icons.add_chart,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const IncomeManagerPage())),
+          ),
+          DashboardTileDef(
+            label: 'Expense Tracker',
+            description: 'Manage team spending and budget.',
+            icon: Icons.analytics_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const ExpenseManagerPage())),
+          ),
+          DashboardTileDef(
+            label: 'Sponsor Board',
+            description: 'Track sponsor relationships and contributions.',
+            icon: Icons.handshake_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const SponsorManagerPage())),
+          ),
+          DashboardTileDef(
+            label: 'Event Organizer',
+            description: 'Plan and manage team events and outreach.',
+            icon: Icons.event_note_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const EventManagerPage())),
+          ),
+        ],
+      ),
+      DashboardSectionDef(
+        title: 'Meta & Settings',
+        icon: Icons.settings_outlined,
+        tiles: [
+          DashboardTileDef(
+            label: 'About the Devs',
+            description: 'Learn more about the creators of this app.',
+            icon: Icons.info_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const AboutUsPage())),
+          ),
+          DashboardTileDef(
+            label: 'Feedback',
+            description: 'Submit bug reports or feature requests.',
+            icon: Icons.feedback_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const FeedbackPage())),
+          ),
+          DashboardTileDef(
+            label: 'Help',
+            description: 'User guide and documentation for the app.',
+            icon: Icons.help_outline,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const HelpPage())),
+          ),
+          DashboardTileDef(
+            label: 'Setup',
+            description: 'Configure your team settings and preferences.',
+            icon: Icons.settings_outlined,
+            onTap: context == null ? null : (c) => Navigator.push(c, MaterialPageRoute(builder: (_) => const SetupPage())),
+          ),
+        ],
+      ),
+    ];
+  }
 }
 
 /// Helper class to summarize battery health status.
@@ -117,8 +342,9 @@ class _DashboardPageState extends State<DashboardPage> {
   scout.TeamMatchSummary? _nextMatch;
   String? _eventCode;
 
-  // Section visibility state
+  // Visibility state (Synced with Firestore)
   Map<String, bool> _sectionVisibility = {};
+  Map<String, bool> _tileVisibility = {};
 
   // --- Easter Egg State ---
   int _easterEggTaps = 0;
@@ -132,7 +358,6 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _loadWelcomeData();
     _listenToUserData();
-    _loadSectionVisibility();
   }
 
   @override
@@ -142,55 +367,53 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
-  /// Loads section visibility from SharedPreferences.
-  Future<void> _loadSectionVisibility() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sections = _buildSections();
-    final Map<String, bool> visibility = {};
-    for (final section in sections) {
-      visibility[section.title] = prefs.getBool('section_visible_${section.title}') ?? true;
-    }
-    setState(() {
-      _sectionVisibility = visibility;
+  /// Saves current visibility maps to Firebase Firestore.
+  Future<void> _syncVisibilityToFirebase() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    
+    await _db.collection('users').doc(user.uid).update({
+      'sectionVisibility': _sectionVisibility,
+      'tileVisibility': _tileVisibility,
     });
   }
 
   /// Toggles and saves section visibility.
-  Future<void> _toggleSection(String title) async {
-    final prefs = await SharedPreferences.getInstance();
-    final isVisible = !(_sectionVisibility[title] ?? true);
-    await prefs.setBool('section_visible_$title', isVisible);
+  void _toggleSection(String title) {
     setState(() {
-      _sectionVisibility[title] = isVisible;
+      _sectionVisibility[title] = !(_sectionVisibility[title] ?? true);
     });
+    _syncVisibilityToFirebase();
+  }
+
+  /// Toggles individual tile visibility.
+  void _toggleTile(String label) {
+    setState(() {
+      _tileVisibility[label] = !(_tileVisibility[label] ?? true);
+    });
+    _syncVisibilityToFirebase();
   }
 
   /// Expands all sections.
-  Future<void> _expandAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sections = _buildSections();
-    final Map<String, bool> visibility = {};
-    for (final section in sections) {
-      visibility[section.title] = true;
-      await prefs.setBool('section_visible_${section.title}', true);
-    }
+  void _expandAll() {
+    final sections = DashboardMetadata.getSections(null);
     setState(() {
-      _sectionVisibility = visibility;
+      for (final section in sections) {
+        _sectionVisibility[section.title] = true;
+      }
     });
+    _syncVisibilityToFirebase();
   }
 
   /// Collapses all sections.
-  Future<void> _collapseAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sections = _buildSections();
-    final Map<String, bool> visibility = {};
-    for (final section in sections) {
-      visibility[section.title] = false;
-      await prefs.setBool('section_visible_${section.title}', false);
-    }
+  void _collapseAll() {
+    final sections = DashboardMetadata.getSections(null);
     setState(() {
-      _sectionVisibility = visibility;
+      for (final section in sections) {
+        _sectionVisibility[section.title] = false;
+      }
     });
+    _syncVisibilityToFirebase();
   }
 
   /// Triggers the "Overclock Mode" (Party Mode) easter egg.
@@ -217,13 +440,11 @@ class _DashboardPageState extends State<DashboardPage> {
         return;
       }
       setState(() {
-        // Cycle through rainbow colors for the easter egg effect.
         _overclockColor = Colors.primaries[math.Random().nextInt(Colors.primaries.length)];
         _rotation += 0.4;
       });
     });
 
-    // Automatically deactivate after 5 seconds.
     Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
         _overclockTimer?.cancel();
@@ -244,7 +465,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  /// Sets up a real-time listener for user data to update battery status and other dynamic info.
+  /// Sets up a real-time listener for user data to update battery status and visibility settings.
   void _listenToUserData() {
     final user = _auth.currentUser;
     if (user == null) return;
@@ -253,9 +474,13 @@ class _DashboardPageState extends State<DashboardPage> {
     _userDocSub = _db.collection('users').doc(user.uid).snapshots().listen((snap) {
       if (!snap.exists || !mounted) return;
 
-      final setupData = (snap.data()?['setupData'] as Map<String, dynamic>?) ?? {};
+      final data = snap.data() ?? {};
+      final setupData = (data['setupData'] as Map<String, dynamic>?) ?? {};
 
-      // Calculate battery status summary based on thresholds from Firestore.
+      // Load visibility settings from Firebase
+      final fsSectionVis = (data['sectionVisibility'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as bool));
+      final fsTileVis = (data['tileVisibility'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as bool));
+
       final batteries = BatteryCalc.batteriesFromSetupData(setupData);
       final thresholds = (setupData['voltageThresholds'] as Map<String, dynamic>?) ?? {};
       final emptyVolt = (thresholds['empty'] as num?)?.toDouble() ?? 12.0;
@@ -277,6 +502,9 @@ class _DashboardPageState extends State<DashboardPage> {
       }
 
       setState(() {
+        if (fsSectionVis != null) _sectionVisibility = fsSectionVis;
+        if (fsTileVis != null) _tileVisibility = fsTileVis;
+        
         _batterySummary = _BatterySummary(
           total: batteries.length,
           full: full,
@@ -325,7 +553,6 @@ class _DashboardPageState extends State<DashboardPage> {
       final info = detail.teamInfo;
       final name = (info['nameFull'] ?? info['name'] ?? '').toString().trim();
 
-      // Identify the next upcoming match based on current time.
       scout.TeamMatchSummary? nextMatch;
       final now = DateTime.now();
 
@@ -363,292 +590,75 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  /// Organizes all app features into categorized sections for the dashboard layout.
-  List<_DashboardSection> _buildSections() {
-    return [
-      _DashboardSection(
-        title: 'Analysis & Insights',
-        icon: Icons.analytics_outlined,
-        tiles: [
-          _DashboardTileDef(
-            label: 'Team Searcher',
-            icon: Icons.person_search_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const TeamSearcherPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'My Team Score',
-            icon: Icons.bar_chart_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const OwnTeamScorePage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Other Team Prediction',
-            icon: Icons.insights_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const OtherTeamPredictionPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Alliance Selection',
-            icon: Icons.groups_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AllianceSelectionPage()),
-            ),
-          ),
-        ],
+  /// Opens a dialog to manage visibility of tiles within a specific section.
+  void _showTileManager(BuildContext context, DashboardSectionDef section) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      _DashboardSection(
-        title: 'Match Simulation & Scores',
-        icon: Icons.sports_esports_outlined,
-        tiles: [
-          _DashboardTileDef(
-            label: 'Match Simulator',
-            icon: Icons.play_circle_outline,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MatchSimulatorPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Predictive Simulator',
-            icon: Icons.query_stats_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MatchSimulatorV2Page()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Points Calculator',
-            icon: Icons.calculate_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PointEstimateCalculatorPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Practice Score Keeper',
-            icon: Icons.edit_note_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PracticeCalculatorPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Drive Practice Game',
-            icon: Icons.videogame_asset_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MiniGamePage()),
-            ),
-          ),
-        ],
-      ),
-      _DashboardSection(
-        title: 'Preparation & Strategy',
-        icon: Icons.lightbulb_outline,
-        tiles: [
-          _DashboardTileDef(
-            label: 'Strategy Whiteboard',
-            icon: Icons.draw_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const StrategyWhiteboardPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Pre-Match Checklist',
-            icon: Icons.fact_check_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PreMatchChecklistPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Auto Path Visualizer',
-            icon: Icons.map_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AutoPathVisualizerPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Auto Path Route',
-            icon: Icons.alt_route_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => AutoPathRoutePage(title: 'Auto Path Route')),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Battery Management',
-            icon: Icons.battery_charging_full_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BatteryPage()),
-            ),
-          ),
-        ],
-      ),
-      _DashboardSection(
-        title: 'Tools & Engineering',
-        icon: Icons.build_circle_outlined,
-        tiles: [
-          _DashboardTileDef(
-            label: 'Robot Configuration',
-            icon: Icons.settings_input_component,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const RobotConfigPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Pit Practice',
-            icon: Icons.question_answer_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PitInterviewPracticePage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Resource Hub',
-            icon: Icons.menu_book_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ResourceHubPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Time Tracking',
-            icon: Icons.timer_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const HourRegistrationPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Scrumboard',
-            icon: Icons.view_kanban_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ScrumBoardPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Team Tasklist',
-            icon: Icons.checklist_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const TaskListTeamPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Portfolio',
-            icon: Icons.auto_stories_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PortfolioPage()),
-            ),
-          ),
-        ],
-      ),
-      _DashboardSection(
-        title: 'Business & Outreach',
-        icon: Icons.business_center_outlined,
-        tiles: [
-          _DashboardTileDef(
-            label: 'Business Hub',
-            icon: Icons.dashboard_customize_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BusinessDashboardPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Income Tracker',
-            icon: Icons.add_chart,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const IncomeManagerPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Expense Tracker',
-            icon: Icons.analytics_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ExpenseManagerPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Sponsor Board',
-            icon: Icons.handshake_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SponsorManagerPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Event Organizer',
-            icon: Icons.event_note_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EventManagerPage()),
-            ),
-          ),
-        ],
-      ),
-      _DashboardSection(
-        title: 'Meta & Settings',
-        icon: Icons.settings_outlined,
-        tiles: [
-          _DashboardTileDef(
-            label: 'About the Devs',
-            icon: Icons.info_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AboutUsPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Feedback',
-            icon: Icons.feedback_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const FeedbackPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Help',
-            icon: Icons.help_outline,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const HelpPage()),
-            ),
-          ),
-          _DashboardTileDef(
-            label: 'Setup',
-            icon: Icons.settings_outlined,
-            onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SetupPage()),
-            ),
-          ),
-        ],
-      ),
-    ];
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Icon(section.icon, color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          "Manage ${section.title}",
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: section.tiles.length,
+                      itemBuilder: (context, index) {
+                        final tile = section.tiles[index];
+                        final isVisible = _tileVisibility[tile.label] ?? true;
+                        return CheckboxListTile(
+                          title: Text(tile.label),
+                          secondary: Icon(tile.icon, size: 20),
+                          value: isVisible,
+                          activeColor: Theme.of(context).colorScheme.primary,
+                          onChanged: (val) {
+                            _toggleTile(tile.label);
+                            setModalState(() {});
+                          },
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final sections = _buildSections();
+    final sections = DashboardMetadata.getSections(context);
 
     return Scaffold(
       appBar: const TopAppBar(
@@ -663,7 +673,6 @@ class _DashboardPageState extends State<DashboardPage> {
           int crossAxisCount;
           double childAspectRatio;
 
-          // Advanced Responsive grid for ultra-wide monitors
           if (width >= 2600) {
             crossAxisCount = 7;
             childAspectRatio = 2.2;
@@ -695,36 +704,31 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      // Overview summary card
                       _welcomeHeaderCard(theme),
                       const SizedBox(height: 16),
                       
-                      // Global controls for sections
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Row(
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
                           children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: _expandAll,
-                                icon: const Icon(Icons.unfold_more, size: 18),
-                                label: const Text("Expand All"),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
-                                ),
+                            OutlinedButton.icon(
+                              onPressed: _expandAll,
+                              icon: const Icon(Icons.unfold_more, size: 18),
+                              label: const Text("Expand All"),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: _collapseAll,
-                                icon: const Icon(Icons.unfold_less, size: 18),
-                                label: const Text("Collapse All"),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
-                                ),
+                            OutlinedButton.icon(
+                              onPressed: _collapseAll,
+                              icon: const Icon(Icons.unfold_less, size: 18),
+                              label: const Text("Collapse All"),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                side: BorderSide(color: theme.colorScheme.primary.withAlpha(100)),
                               ),
                             ),
                           ],
@@ -732,7 +736,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       const SizedBox(height: 16),
                       
-                      // Feature grid sections
                       for (final section in sections)
                         _buildSection(
                           context: context,
@@ -756,7 +759,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  /// Builds the high-level status card at the top of the dashboard.
   Widget _welcomeHeaderCard(ThemeData theme) {
     final primary = theme.colorScheme.primary;
 
@@ -768,10 +770,8 @@ class _DashboardPageState extends State<DashboardPage> {
       subtitle = 'Could not load team info. Tap to retry.';
     }
 
-    final canTap = !_loadingHeader;
-
     return GestureDetector(
-      onTap: canTap ? _loadWelcomeData : null,
+      onTap: null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.all(16),
@@ -792,7 +792,6 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Row(
               children: [
-                // Easter Egg Trigger Widget
                 GestureDetector(
                   onTap: _handleEasterEggTap,
                   child: Transform.rotate(
@@ -849,17 +848,27 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ],
             ),
-            // Current Battery Status Summary
             if (_batterySummary.total > 0) ...[
               const Divider(height: 24),
-              Text(
-                'Battery Status',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const BatteryPage()),
+                ),
+                borderRadius: BorderRadius.circular(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Battery Status',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildBatterySummary(theme),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              _buildBatterySummary(theme),
             ],
-            // Next Upcoming Match Summary
             if (_nextMatch != null) ...[
               const Divider(height: 24),
               _buildNextMatch(theme),
@@ -870,21 +879,16 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  /// Displays information about the team's next upcoming match.
   Widget _buildNextMatch(ThemeData theme) {
     final match = _nextMatch!;
     final myTeam = _teamNumber;
     if (myTeam == null) return const SizedBox.shrink();
 
     final isRed = match.alliance == 'Red';
-
-    // Extract alliance partners and opponents.
     final redPartner = match.redTeams.where((team) => team != myTeam).firstOrNull;
     final bluePartner = match.blueTeams.where((team) => team != myTeam).firstOrNull;
-
     final redOpponent1 = isRed ? match.blueTeams.elementAtOrNull(0) : match.redTeams.elementAtOrNull(0);
     final redOpponent2 = isRed ? match.blueTeams.elementAtOrNull(1) : match.redTeams.elementAtOrNull(1);
-
     final matchLabel = match.tournamentLevel.isEmpty ? 'Match ${match.matchId}' : '${match.tournamentLevel} ${match.matchId}';
 
     return Column(
@@ -898,38 +902,16 @@ class _DashboardPageState extends State<DashboardPage> {
         Row(
           children: [
             Expanded(child: _allianceTeam(theme, 'You', myTeam, isRed: isRed)),
-            Expanded(
-              child: _allianceTeam(
-                theme,
-                'Partner',
-                isRed ? redPartner : bluePartner,
-                isRed: isRed,
-              ),
-            ),
+            Expanded(child: _allianceTeam(theme, 'Partner', isRed ? redPartner : bluePartner, isRed: isRed)),
             const SizedBox(width: 12),
-            Expanded(
-              child: _allianceTeam(
-                theme,
-                'Opponent 1',
-                redOpponent1,
-                isRed: !isRed,
-              ),
-            ),
-            Expanded(
-              child: _allianceTeam(
-                theme,
-                'Opponent 2',
-                redOpponent2,
-                isRed: !isRed,
-              ),
-            ),
+            Expanded(child: _allianceTeam(theme, 'Opponent 1', redOpponent1, isRed: !isRed)),
+            Expanded(child: _allianceTeam(theme, 'Opponent 2', redOpponent2, isRed: !isRed)),
           ],
         ),
       ],
     );
   }
 
-  /// UI helper for displaying a team within an alliance row.
   Widget _allianceTeam(ThemeData theme, String title, int? teamNumber, {required bool isRed}) {
     final color = isRed ? Colors.red : Colors.blue;
     final hasNumber = teamNumber != null && teamNumber > 0;
@@ -943,18 +925,14 @@ class _DashboardPageState extends State<DashboardPage> {
           decoration: BoxDecoration(
             color: (hasNumber ? color.withAlpha(50) : theme.colorScheme.surfaceContainerHighest),
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: hasNumber ? color.withAlpha(120) : theme.dividerColor.withAlpha(120),
-            ),
+            border: Border.all(color: hasNumber ? color.withAlpha(120) : theme.dividerColor.withAlpha(120)),
           ),
           child: Center(
             child: Text(
               hasNumber ? teamNumber.toString() : '-',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: hasNumber
-                    ? (isRed ? Colors.red.shade800 : Colors.blue.shade800)
-                    : theme.textTheme.bodyMedium?.color?.withAlpha(150),
+                color: hasNumber ? (isRed ? Colors.red.shade800 : Colors.blue.shade800) : theme.textTheme.bodyMedium?.color?.withAlpha(150),
               ),
             ),
           ),
@@ -963,54 +941,20 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  /// Builds the battery status row based on real-time calculated summary.
   Widget _buildBatterySummary(ThemeData theme) {
     return Row(
       children: [
-        _batteryStat(
-          icon: Icons.check_circle,
-          label: 'Full',
-          value: _batterySummary.full,
-          color: Colors.green.shade600,
-        ),
-        _batteryStat(
-          icon: Icons.radio_button_checked,
-          label: 'Okay',
-          value: _batterySummary.ok,
-          color: Colors.blue.shade600,
-        ),
-        _batteryStat(
-          icon: Icons.warning_amber,
-          label: 'Low',
-          value: _batterySummary.low,
-          color: Colors.amber.shade700,
-        ),
-        _batteryStat(
-          icon: Icons.error,
-          label: 'Critical',
-          value: _batterySummary.critical,
-          color: Colors.red.shade700,
-          highlight: true,
-        ),
+        _batteryStat(icon: Icons.check_circle, label: 'Full', value: _batterySummary.full, color: Colors.green.shade600),
+        _batteryStat(icon: Icons.radio_button_checked, label: 'Okay', value: _batterySummary.ok, color: Colors.blue.shade600),
+        _batteryStat(icon: Icons.warning_amber, label: 'Low', value: _batterySummary.low, color: Colors.amber.shade700),
+        _batteryStat(icon: Icons.error, label: 'Critical', value: _batterySummary.critical, color: Colors.red.shade700, highlight: true),
       ],
     );
   }
 
-  /// UI helper for displaying individual battery metrics.
-  Widget _batteryStat({
-    required IconData icon,
-    required String label,
-    required int value,
-    required Color color,
-    bool highlight = false,
-  }) {
+  Widget _batteryStat({required IconData icon, required String label, required int value, required Color color, bool highlight = false}) {
     final theme = Theme.of(context);
-    final decoration = highlight && value > 0
-        ? BoxDecoration(
-      color: color.withAlpha(40),
-      borderRadius: BorderRadius.circular(12),
-    )
-        : null;
+    final decoration = highlight && value > 0 ? BoxDecoration(color: color.withAlpha(40), borderRadius: BorderRadius.circular(12)) : null;
 
     return Expanded(
       child: Container(
@@ -1023,86 +967,79 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Icon(icon, color: color, size: 18),
                 const SizedBox(width: 6),
-                Text(
-                  value.toString(),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
+                Text(value.toString(), style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color)),
               ],
             ),
             const SizedBox(height: 2),
-            Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.textTheme.bodySmall?.color?.withAlpha(170),
-              ),
-            ),
+            Text(label, style: theme.textTheme.bodySmall?.copyWith(color: theme.textTheme.bodySmall?.color?.withAlpha(170))),
           ],
         ),
       ),
     );
   }
 
-  /// Builds a titled section containing interactive feature tiles.
-  Widget _buildSection({
-    required BuildContext context,
-    required _DashboardSection section,
-    required int crossAxisCount,
-    required double childAspectRatio,
-  }) {
+  Widget _buildSection({required BuildContext context, required DashboardSectionDef section, required int crossAxisCount, required double childAspectRatio}) {
     final theme = Theme.of(context);
     final isVisible = _sectionVisibility[section.title] ?? true;
+    final visibleTiles = section.tiles.where((t) => _tileVisibility[t.label] ?? true).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: () => _toggleSection(section.title),
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            child: Row(
-              children: [
-                Icon(section.icon, size: 20, color: theme.colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    section.title,
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                  ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () => _toggleSection(section.title),
+                borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(section.icon, size: 20, color: theme.colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(section.title, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 8),
+                    Icon(isVisible ? Icons.expand_less : Icons.expand_more, size: 20, color: theme.textTheme.bodySmall?.color),
+                  ],
                 ),
-                Icon(
-                  isVisible ? Icons.expand_less : Icons.expand_more,
-                  color: theme.textTheme.bodySmall?.color,
-                ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.tune, size: 20),
+                onPressed: () => _showTileManager(context, section),
+                tooltip: "Manage Tiles",
+                visualDensity: VisualDensity.compact,
+                color: theme.colorScheme.primary.withAlpha(180),
+              ),
+            ],
           ),
         ),
         AnimatedCrossFade(
-          firstChild: GridView.builder(
+          firstChild: visibleTiles.isEmpty 
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest.withAlpha(80), borderRadius: BorderRadius.circular(12), border: Border.all(color: theme.dividerColor.withAlpha(40))),
+                  child: Column(
+                    children: [
+                      Icon(Icons.visibility_off_outlined, color: theme.disabledColor),
+                      const SizedBox(height: 8),
+                      Text("All tiles hidden in this section", style: TextStyle(color: theme.disabledColor)),
+                    ],
+                  ),
+                )
+              : GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: section.tiles.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: childAspectRatio,
-            ),
+            itemCount: visibleTiles.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: childAspectRatio),
             itemBuilder: (context, tileIndex) {
-              final tile = section.tiles[tileIndex];
-              return DashboardTile(
-                label: tile.label,
-                icon: tile.icon,
-                onTap: tile.onTap == null ? null : () => tile.onTap?.call(context),
-                comingSoon: tile.comingSoon,
-              );
+              final tile = visibleTiles[tileIndex];
+              return DashboardTile(label: tile.label, icon: tile.icon, onTap: tile.onTap == null ? null : () => tile.onTap?.call(context), comingSoon: tile.comingSoon);
             },
           ),
-          secondChild: const SizedBox(width: double.infinity),
+          secondChild: const SizedBox(width: double.infinity, height: 0),
           crossFadeState: isVisible ? CrossFadeState.showFirst : CrossFadeState.showSecond,
           duration: const Duration(milliseconds: 300),
         ),

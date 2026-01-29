@@ -86,6 +86,7 @@ class SetupData {
 /// - Battery inventory and charger count.
 /// - Team member list and their roles.
 /// - Tournament event list (with automatic import from FTCScout).
+/// - Dashboard feature visibility.
 class SetupPage extends StatefulWidget {
   const SetupPage({super.key});
 
@@ -137,6 +138,9 @@ class _SetupPageState extends State<SetupPage> {
     EventConfig(name: 'NLHAQ'),
   ];
 
+  // Dashboard Visibility State
+  Map<String, bool> _tileVisibility = {};
+
   // State for importing events from the API.
   int _eventSeason = 2025;
   bool _importingEvents = false;
@@ -158,7 +162,7 @@ class _SetupPageState extends State<SetupPage> {
     super.dispose();
   }
 
-  /// Fetches existing setup data from Firestore and populates the local state.
+  /// Fetches existing setup data and dashboard settings from Firestore.
   Future<void> _loadExistingSetup() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -173,6 +177,11 @@ class _SetupPageState extends State<SetupPage> {
 
       if (doc.exists) {
         final data = doc.data();
+        
+        // Load tile visibility settings
+        final fsTileVis = (data?['tileVisibility'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as bool));
+        if (fsTileVis != null) _tileVisibility = fsTileVis;
+
         final setup = data?['setupData'] as Map<String, dynamic>?;
 
         if (setup != null) {
@@ -450,6 +459,9 @@ class _SetupPageState extends State<SetupPage> {
                         const SizedBox(height: 16),
                         _buildSectionTitle('6. Configure events'),
                         _buildEventsSection(),
+                        const SizedBox(height: 16),
+                        _buildSectionTitle('7. Dashboard Features'),
+                        _buildDashboardVisibilitySection(),
                         const SizedBox(height: 24),
                         _buildSaveButton(),
                         const SizedBox(height: 24),
@@ -1047,6 +1059,48 @@ class _SetupPageState extends State<SetupPage> {
     );
   }
 
+  // ------- DASHBOARD CONFIGURATION -------
+
+  Widget _buildDashboardVisibilitySection() {
+    final sections = DashboardMetadata.getSections(null);
+    return _buildCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Select which features your team uses. These will be shown on your dashboard.',
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          for (var section in sections) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                section.title,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+            for (var tile in section.tiles)
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                title: Text(tile.label, style: const TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: Text(tile.description, style: const TextStyle(fontSize: 12)),
+                secondary: Icon(tile.icon, size: 24, color: Theme.of(context).colorScheme.primary),
+                value: _tileVisibility[tile.label] ?? true,
+                onChanged: (val) {
+                  setState(() {
+                    _tileVisibility[tile.label] = val ?? true;
+                  });
+                },
+              ),
+            const Divider(),
+          ],
+        ],
+      ),
+    );
+  }
+
   // ------- SAVE ACTION -------
 
   Widget _buildSaveButton() {
@@ -1103,10 +1157,11 @@ class _SetupPageState extends State<SetupPage> {
       final userDoc =
       FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      // Persist configuration to Firestore.
+      // Persist configuration and visibility to Firestore.
       await userDoc.set(
         {
           'setupData': setupData.toMap(),
+          'tileVisibility': _tileVisibility,
         },
         SetOptions(merge: true),
       );

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-connection/api_global.dart';
 import 'package:ftcmanageapp/program-files/backend/api-ftcscout-rest/api-calculations/team_searcher.dart';
 
@@ -16,13 +17,67 @@ class TeamDetailData {
 class TeamSearcherRepository {
   const TeamSearcherRepository();
 
-  /// Searches for teams by name or number using the FTCScout API.
+  /// Searches for teams by name or number using the FTCScout API with improved ranking and fuzzy-like fallback.
   Future<List<Map<String, dynamic>>> searchTeams(String query) async {
-    final raw = await ftcScoutApi.searchTeams(searchText: query, limit: 20);
+    if (query.trim().isEmpty) return [];
+    
+    final cleanQuery = query.trim();
+    
+    // 1. Initial attempt with full query
+    var raw = await ftcScoutApi.searchTeams(searchText: cleanQuery, limit: 40);
+    List<Map<String, dynamic>> results = [];
     if (raw is List) {
-      return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      results = raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
     }
-    return [];
+
+    // 2. If no results and it's a name, try a more relaxed search (handle potential typos at the end)
+    if (results.isEmpty && cleanQuery.length > 3 && int.tryParse(cleanQuery) == null) {
+      final fallbackQuery = cleanQuery.substring(0, (cleanQuery.length * 0.8).floor());
+      if (fallbackQuery.length >= 3) {
+        final rawFallback = await ftcScoutApi.searchTeams(searchText: fallbackQuery, limit: 40);
+        if (rawFallback is List) {
+          results = rawFallback.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+        }
+      }
+    }
+
+    // 3. Rank results based on similarity to original query to bring best matches to top
+    if (results.isNotEmpty) {
+      results.sort((a, b) {
+        final scoreA = _calculateMatchScore(cleanQuery, a);
+        final scoreB = _calculateMatchScore(cleanQuery, b);
+        return scoreB.compareTo(scoreA); // Highest score first
+      });
+    }
+
+    return results;
+  }
+
+  /// Calculates a relevance score for a team based on the search query.
+  double _calculateMatchScore(String query, Map<String, dynamic> team) {
+    final q = query.toLowerCase();
+    final number = (team['number'] ?? team['teamNumber'] ?? '').toString();
+    final nameShort = (team['nameShort'] ?? team['shortName'] ?? '').toString().toLowerCase();
+    final nameFull = (team['nameFull'] ?? team['name'] ?? '').toString().toLowerCase();
+    final city = (team['city'] ?? '').toString().toLowerCase();
+
+    if (number == q) return 100.0; // Perfect number match
+    if (number.startsWith(q)) return 90.0; // Number prefix match
+    
+    if (nameShort == q || nameFull == q) return 85.0; // Perfect name match
+    if (nameShort.startsWith(q) || nameFull.startsWith(q)) return 75.0; // Name prefix match
+    
+    if (nameFull.contains(q)) return 60.0; // Name contains query
+    if (city.contains(q)) return 40.0; // City match
+    
+    // Fuzzy bonus: check if many characters overlap
+    int charMatches = 0;
+    final combinedName = nameShort + nameFull;
+    for (int i = 0; i < q.length; i++) {
+      if (combinedName.contains(q[i])) charMatches++;
+    }
+    
+    return (charMatches / q.length) * 20.0;
   }
 
   /// Loads full details for a specific team, including their match history for a given season.
